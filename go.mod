@@ -1,6 +1,6 @@
-module github.com/zhugelianglongming/vm-geth
+module github.com/xuperchain/vm-geth
 
-go 1.19
+go 1.18
 
 require github.com/xuperchain/xupercore v0.0.0-20211217074346-8b7d81f702cc
 

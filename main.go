@@ -1,7 +1,7 @@
 package vm_geth
 
 import (
-	"github.com/zhugelianglongming/vm-geth/geth"
+	"github.com/xuperchain/vm-geth/geth"
 )
 
 var NewEvmCreator = geth.NewEvmCreator

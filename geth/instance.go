@@ -10,7 +10,7 @@ import (
 	"github.com/xuperchain/xupercore/kernel/contract/bridge/pb"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	"github.com/zhugelianglongming/vm-geth/geth/address"
+	"github.com/xuperchain/vm-geth/geth/address"
 )
 
 const (
