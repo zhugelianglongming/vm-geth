@@ -53,10 +53,7 @@ func (s stateDB) GetCodeHash(address common.Address) common.Hash {
 }
 
 func (s stateDB) GetCode(addr common.Address) []byte {
-	xAddr, err := s.addrAdaptor.E2X(addr)
-	if err != nil {
-		return nil
-	}
+	xAddr := s.addrAdaptor.E2X(addr)
 	if xAddr.Type != address.XAddressTypeContractName {
 		return nil
 	}
@@ -70,8 +67,14 @@ func (s stateDB) GetCode(addr common.Address) []byte {
 	return code
 }
 
-func (s stateDB) SetCode(address common.Address, bytes []byte) {
-	panic("implement me")
+func (s stateDB) SetCode(addr common.Address, bytes []byte) {
+	xAddr := s.addrAdaptor.E2X(addr)
+	if xAddr.Type != address.XAddressTypeContractName {
+		return
+	}
+	contractName := xAddr.Address
+
+	_ = s.ctx.State.Put("contract", evmCodeKey(contractName), bytes)
 }
 
 func (s stateDB) GetCodeSize(address common.Address) int {
@@ -164,4 +167,8 @@ func (s stateDB) AddPreimage(hash common.Hash, bytes []byte) {
 
 func (s stateDB) ForEachStorage(address common.Address, f func(common.Hash, common.Hash) bool) error {
 	panic("implement me")
+}
+
+func evmCodeKey(contractName string) []byte {
+	return []byte(contractName + ".code")
 }

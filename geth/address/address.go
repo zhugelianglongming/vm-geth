@@ -45,7 +45,11 @@ func (a EVMAddress) GetType() int {
 	}
 }
 
-func (a EVMAddress) xAddress() (XAddress, error) {
+func (a EVMAddress) String() string {
+	return string(a.addr.Bytes())
+}
+
+func (a EVMAddress) xAddress() XAddress {
 	switch a.GetType() {
 	case XAddressTypeContractName:
 		return a.xAddressContractName()
@@ -59,7 +63,7 @@ func (a EVMAddress) xAddress() (XAddress, error) {
 // xAddressContractName converts EVM address to contract name.
 // Contract name is suffix of EVM, which immediately following padding.
 // !!!Note: there is no padding for a 16-word contract name
-func (a EVMAddress) xAddressContractName() (XAddress, error) {
+func (a EVMAddress) xAddressContractName() XAddress {
 	lastPaddingIdx := strings.LastIndex(a.String(), padding)
 	var contractName string
 	if lastPaddingIdx == -1 {
@@ -72,16 +76,12 @@ func (a EVMAddress) xAddressContractName() (XAddress, error) {
 		Address: contractName,
 		Type:    XAddressTypeContractName,
 	}
-	return xAddr, nil
-}
-
-func (a EVMAddress) String() string {
-	return string(a.addr.Bytes())
+	return xAddr
 }
 
 // xAddressContractAccount converts EVM address to contract account.
 // Contract account number is 16-word-suffix of EVM address.
-func (a EVMAddress) xAddressContractAccount() (XAddress, error) {
+func (a EVMAddress) xAddressContractAccount() XAddress {
 	accountNumber := a.String()[typePrefixLen:]
 	accountName := utils.MakeAccountKey("xuper", accountNumber)
 
@@ -89,11 +89,11 @@ func (a EVMAddress) xAddressContractAccount() (XAddress, error) {
 		Address: accountName,
 		Type:    XAddressTypeContractAccount,
 	}
-	return xAddr, nil
+	return xAddr
 }
 
 // xAddressDefaultAccount converts EVM address to xuper default account
-func (a EVMAddress) xAddressDefaultAccount() (XAddress, error) {
+func (a EVMAddress) xAddressDefaultAccount() XAddress {
 
 	version := []byte(xAddressVersion)
 	publicKeyHash := a.addr.Bytes()
@@ -107,7 +107,7 @@ func (a EVMAddress) xAddressDefaultAccount() (XAddress, error) {
 		Address: base58.Encode(account),
 		Type:    XAddressTypeDefaultAccount,
 	}
-	return xAddr, nil
+	return xAddr
 }
 
 const (

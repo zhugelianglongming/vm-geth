@@ -1,6 +1,8 @@
 package address
 
-import "github.com/ethereum/go-ethereum/common"
+import (
+	"github.com/ethereum/go-ethereum/common"
+)
 
 // Adaptor is address adaptor for Geth EVM implementation
 // which make sure to map random generated contract EVM address to contract name
@@ -16,13 +18,13 @@ func (a *Adaptor) BindContract(name string, addr common.Address) {
 }
 
 // E2X transform EVM address to xuper address
-func (a *Adaptor) E2X(addr common.Address) (XAddress, error) {
+func (a *Adaptor) E2X(addr common.Address) XAddress {
 	if addr == a.contractAddr {
 		xAddr := XAddress{
 			Address: a.contractName,
-			Type: XAddressTypeContractName,
+			Type:    XAddressTypeContractName,
 		}
-		return xAddr, nil
+		return xAddr
 	}
 	return NewEVMAddress(addr).xAddress()
 }
