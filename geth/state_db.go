@@ -1,6 +1,7 @@
 package geth
 
 import (
+	"github.com/zhugelianglongming/vm-geth/geth/address"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -10,19 +11,21 @@ import (
 )
 
 type stateDB struct {
-	ctx *bridge.Context
-	cp  bridge.ContractCodeProvider
+	ctx         *bridge.Context
+	cp          bridge.ContractCodeProvider
+	addrAdaptor *address.Adaptor
 }
 
 func NewStateDB(ctx *bridge.Context, cp bridge.ContractCodeProvider) *stateDB {
 	return &stateDB{
-		ctx: ctx,
-		cp:  cp,
+		ctx:         ctx,
+		cp:          cp,
+		addrAdaptor: new(address.Adaptor),
 	}
 }
 
 func (s stateDB) CreateAccount(address common.Address) {
-	panic("implement me")
+	s.addrAdaptor.BindContract(s.ctx.ContractName, address)
 }
 
 func (s stateDB) SubBalance(address common.Address, b *big.Int) {
@@ -49,8 +52,22 @@ func (s stateDB) GetCodeHash(address common.Address) common.Hash {
 	panic("implement me")
 }
 
-func (s stateDB) GetCode(address common.Address) []byte {
-	panic("implement me")
+func (s stateDB) GetCode(addr common.Address) []byte {
+	xAddr, err := s.addrAdaptor.E2X(addr)
+	if err != nil {
+		return nil
+	}
+	if xAddr.Type != address.XAddressTypeContractName {
+		return nil
+	}
+	contractName := xAddr.Address
+
+	if s.ctx.ReadFromCache {
+		code, _ := s.cp.GetContractCodeFromCache(contractName)
+		return code
+	}
+	code, _ := s.cp.GetContractCode(contractName)
+	return code
 }
 
 func (s stateDB) SetCode(address common.Address, bytes []byte) {

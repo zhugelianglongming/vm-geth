@@ -15,7 +15,14 @@ func (a *Adaptor) BindContract(name string, addr common.Address) {
 	a.contractAddr = addr
 }
 
-// E2X transform EVM address to xuper concept
-func (a *Adaptor) E2X(addr common.Address) {
-
+// E2X transform EVM address to xuper address
+func (a *Adaptor) E2X(addr common.Address) (XAddress, error) {
+	if addr == a.contractAddr {
+		xAddr := XAddress{
+			Address: a.contractName,
+			Type: XAddressTypeContractName,
+		}
+		return xAddr, nil
+	}
+	return NewEVMAddress(addr).xAddress()
 }
